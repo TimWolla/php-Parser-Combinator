@@ -30,6 +30,9 @@ use Bastelstube\ParserCombinator\Parser;
 use Bastelstube\ParserCombinator\Result;
 use Widmogrod\Monad\Either;
 
+/**
+ * Matches the given string.
+ */
 class StringP extends Parser
 {
     protected $string;

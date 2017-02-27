@@ -27,15 +27,25 @@ namespace Bastelstube\ParserCombinator;
 
 use Widmogrod\Monad\Either;
 
+/**
+ * Takes a Parser by reference to allow for recursive parsing.
+ */
 class RefParser extends Parser
 {
+    /**
+     * Inner parser.
+     * @var Parser
+     */
     protected $parser;
 
     public function __construct(Parser &$parser)
     {
         $this->parser = &$parser;
     }
-    
+
+    /**
+     * @inheritDoc
+     */
     public function run(Input $input) : Either\Either
     {
         return $this->parser->run($input);

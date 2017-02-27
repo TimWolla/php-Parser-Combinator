@@ -30,20 +30,26 @@ use Bastelstube\ParserCombinator\Parser;
 use Bastelstube\ParserCombinator\Result;
 use Widmogrod\Monad\Either;
 
+/**
+ * Matches bytes that satisfy the given predicate.
+ */
 class SatisfyByte extends Parser
 {
-    protected $function;
+    protected $predicate;
 
-    public function __construct(callable $function)
+    public function __construct(callable $predicate)
     {
-        $this->function = $function;
+        $this->predicate = $predicate;
     }
-    
+
+    /**
+     * @inheritDoc
+     */
     public function run(Input $input) : Either\Either
     {
         return AnyByte::get()->bind(function ($byte) {
-            $function = $this->function;
-            if (!$function($byte)) return Failure::get();
+            $predicate = $this->predicate;
+            if (!$predicate($byte)) return Failure::get();
 
             return Parser::of($byte);
         })->run($input);

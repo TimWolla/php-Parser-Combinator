@@ -31,18 +31,35 @@ use Widmogrod\FantasyLand\Functor;
 use Widmogrod\FantasyLand\Monad;
 use Widmogrod\Monad\Either;
 
+/**
+ * Represents a single Parser.
+ */
 abstract class Parser implements
     Functor,
     Applicative,
     Monad
 {
+    /**
+     * Runs this parser on the given Input.
+     *
+     * @param   Input   $input
+     * @return  Either\Either<Result>
+     */
     abstract public function run(Input $input) : Either\Either;
 
+    /**
+     * Alias for Parser::run().
+     *
+     * @see Parser::run()
+     */
     public function __invoke(Input $input) : Either\Either
     {
         return $this->run($input);
     }
 
+    /**
+     * @inheritDoc
+     */
     public function map(callable $function)
     {
         return Parser::of($function)->ap($this);
@@ -68,6 +85,12 @@ abstract class Parser implements
         };
     }
 
+    /**
+     * Returns a Parser that never consumes input and always returns $value.
+     *
+     * @param   mixed   $value
+     * @return  Parser
+     */
     public static function of($value)
     {
         return new class($value) extends Parser {
@@ -84,6 +107,9 @@ abstract class Parser implements
         };
     }
 
+    /**
+     * @inheritDoc
+     */
     public function ap(Apply $b)
     {
         return $this->bind(function ($f) use ($b) {
@@ -115,13 +141,27 @@ abstract class Parser implements
         };
     }
 
-    public function apL(Apply $b)
+    /**
+     * Returns a combined parser that returns the result of the left parser ($this).
+     *
+     * @param   Apply   $b  The right parser.
+     * @return  Parser
+     * @see Parser::ap()
+     */
+    public function apL(Apply $b) : Parser
     {
         return \Widmogrod\Functional\liftA2(function ($a) {
             return $a;
         }, $this, $b);
     }
 
+    /**
+     * Returns a combined parser that returns the result of the right parser ($b).
+     *
+     * @param   Apply   $b  The right parser.
+     * @return  Parser
+     * @see Parser::ap()
+     */
     public function apR(Apply $b)
     {
         return \Widmogrod\Functional\liftA2(function ($_, $b) {
@@ -129,6 +169,12 @@ abstract class Parser implements
         }, $this, $b);
     }
 
+    /**
+     * Runs the left parser ($this), passes the result to $function
+     * and runs the returned parser on the rest of the input.
+     *
+     * @inheritDoc
+     */
     public function bind(callable $function)
     {
         return new class($this, $function) extends Parser {

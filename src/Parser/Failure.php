@@ -31,10 +31,16 @@ use Bastelstube\ParserCombinator\Result;
 use Bastelstube\ParserCombinator\Singleton;
 use Widmogrod\Monad\Either;
 
+/**
+ * Always fails and never consumes input.
+ */
 class Failure extends Parser
 {
     use Singleton;
 
+    /**
+     * @inheritDoc
+     */
     public function run(Input $input) : Either\Either
     {
         return new Either\Left(static::class);

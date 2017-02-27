@@ -31,10 +31,16 @@ use Bastelstube\ParserCombinator\Result;
 use Bastelstube\ParserCombinator\Singleton;
 use Widmogrod\Monad\Either;
 
+/**
+ * Matches the end of the input.
+ */
 class Eof extends Parser
 {
     use Singleton;
 
+    /**
+     * @inheritDoc
+     */
     public function run(Input $input) : Either\Either
     {
         if ($input->length() > 0) return new Either\Left('End of input not yet reached, while trying to match EOF.');

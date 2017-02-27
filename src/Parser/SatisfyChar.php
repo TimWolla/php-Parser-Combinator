@@ -30,20 +30,23 @@ use Bastelstube\ParserCombinator\Parser;
 use Bastelstube\ParserCombinator\Result;
 use Widmogrod\Monad\Either;
 
+/**
+ * Matches unicode characters that satisfy the given predicate.
+ */
 class SatisfyChar extends Parser
 {
-    protected $function;
+    protected $predicate;
 
-    public function __construct(callable $function)
+    public function __construct(callable $predicate)
     {
-        $this->function = $function;
+        $this->predicate = $predicate;
     }
     
     public function run(Input $input) : Either\Either
     {
         return AnyChar::get()->bind(function ($char) {
-            $function = $this->function;
-            if (!$function($char)) return Failure::get();
+            $predicate = $this->predicate;
+            if (!$predicate($char)) return Failure::get();
 
             return Parser::of($char);
         })->run($input);

@@ -30,6 +30,9 @@ use Bastelstube\ParserCombinator\Parser;
 use Bastelstube\ParserCombinator\Result;
 use Widmogrod\Monad\Either;
 
+/**
+ * Matches the result of the first Parser that successfully parses.
+ */
 class Choice extends Parser
 {
     protected $parsers;
@@ -39,6 +42,9 @@ class Choice extends Parser
         $this->parsers = $parsers;
     }
 
+    /**
+     * @inheritDoc
+     */
     public function run(Input $input) : Either\Either
     {
         $fails = [];

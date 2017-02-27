@@ -31,10 +31,16 @@ use Bastelstube\ParserCombinator\Result;
 use Bastelstube\ParserCombinator\Singleton;
 use Widmogrod\Monad\Either;
 
+/**
+ * Returns the next unicode character in the Input.
+ */
 class AnyChar extends Parser
 {
     use Singleton;
 
+    /**
+     * @inheritDoc
+     */
     public function run(Input $input) : Either\Either
     {
         if ($input->length() < 1) return new Either\Left('End of input reached while trying to parse any char.');

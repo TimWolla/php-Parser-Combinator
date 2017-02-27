@@ -30,6 +30,9 @@ use Bastelstube\ParserCombinator\Parser;
 use Bastelstube\ParserCombinator\Result;
 use Widmogrod\Monad\Either;
 
+/**
+ * Matches the given unicode character.
+ */
 class Char extends Parser
 {
     protected $char;
@@ -39,7 +42,10 @@ class Char extends Parser
         if (mb_strlen($char) !== 1) throw new \InvalidArgumentException('You must specify a single byte to match.');
         $this->char = $char;
     }
-    
+
+    /**
+     * @inheritDoc
+     */
     public function run(Input $input) : Either\Either
     {
         return AnyChar::get()->bind(function ($char) {

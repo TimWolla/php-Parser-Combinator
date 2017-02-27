@@ -27,9 +27,22 @@ namespace Bastelstube\ParserCombinator;
 
 use Widmogrod\FantasyLand\Functor;
 
+/**
+ * Represents the Result of a successful parse.
+ */
 class Result implements Functor
 {
-    protected $result, $rest;
+    /**
+     * The result of the parse.
+     * @var mixed
+     */
+    protected $result;
+    
+    /**
+     * The remaining input.
+     * @var Input
+     */
+    protected $rest;
 
     public function __construct($result, Input $rest)
     {
@@ -37,16 +50,29 @@ class Result implements Functor
         $this->rest = $rest;
     }
 
+    /**
+     * Returns the parse result.
+     *
+     * @return  mixed
+     */
     public function getResult()
     {
         return $this->result;
     }
 
+    /**
+     * Returns the remaining input.
+     *
+     * @return  Input
+     */
     public function getRest() : Input
     {
         return $this->rest;
     }
-    
+
+    /**
+     * @inheritDoc
+     */
     public function map(callable $function)
     {
         return new static($function($this->getResult()), $this->getRest());

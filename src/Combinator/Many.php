@@ -30,6 +30,9 @@ use Bastelstube\ParserCombinator\Parser;
 use Bastelstube\ParserCombinator\Result;
 use Widmogrod\Monad\Either;
 
+/**
+ * Greedily matches the given Parser multiple times. Fails if less than $min matches were achieved.
+ */
 class Many extends Parser
 {
     protected $parser;
@@ -41,6 +44,9 @@ class Many extends Parser
         $this->min = $min;
     }
 
+    /**
+     * @inheritDoc
+     */
     public function run(Input $input) : Either\Either
     {
         $results = [];
