@@ -25,10 +25,9 @@ SOFTWARE.
 
 namespace Bastelstube\ParserCombinator\Test;
 
-use PHPUnit_Framework_TestCase as TestCase;
 use Bastelstube\ParserCombinator;
 
-class ParserTest extends \PHPUnit_Framework_TestCase
+class ParserTest extends \PHPUnit\Framework\TestCase
 {
     public function testMap()
     {

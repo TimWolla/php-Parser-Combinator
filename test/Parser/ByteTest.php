@@ -25,10 +25,9 @@ SOFTWARE.
 
 namespace Bastelstube\ParserCombinator\Test\Parser;
 
-use PHPUnit_Framework_TestCase as TestCase;
 use Bastelstube\ParserCombinator;
 
-class ByteTest extends \PHPUnit_Framework_TestCase
+class ByteTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @expectedException \InvalidArgumentException

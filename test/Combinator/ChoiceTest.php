@@ -25,10 +25,9 @@ SOFTWARE.
 
 namespace Bastelstube\ParserCombinator\Test\Combinator;
 
-use PHPUnit_Framework_TestCase as TestCase;
 use Bastelstube\ParserCombinator;
 
-class ChoiceTest extends \PHPUnit_Framework_TestCase
+class ChoiceTest extends \PHPUnit\Framework\TestCase
 {
     public function testFirstChoice()
     {
