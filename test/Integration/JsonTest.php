@@ -77,7 +77,7 @@ class JsonTest extends \PHPUnit\Framework\TestCase
             }))->ap($digit1)->ap($digits),
             $optMinus->map(\Widmogrod\Functional\curry(function ($a, $b) {
                 return $a.$b;
-            }))->ap($digit1)
+            }))->ap($digit)
         );
         $number = new ParserCombinator\Combinator\Choice(
             $int->map(\Widmogrod\Functional\curry(function ($a, $b, $c) {
@@ -95,10 +95,21 @@ class JsonTest extends \PHPUnit\Framework\TestCase
         $simpleChar = new ParserCombinator\Parser\SatisfyChar(function ($char) {
             return $char !== '"' && $char !== '\\';
         });
+        $hexDigit = new ParserCombinator\Parser\SatisfyChar(function ($char) {
+            return preg_match('/^[0-9a-f]$/ui', $char) > 0;
+        });
         $escaped = (new ParserCombinator\Parser\Char('\\'))->apR(new ParserCombinator\Combinator\Choice(
             new ParserCombinator\Parser\Char('"'),
-            new ParserCombinator\Parser\Char('\\')
-            // TODO
+            new ParserCombinator\Parser\Char('\\'),
+            new ParserCombinator\Parser\Char('/'),
+            (new ParserCombinator\Parser\Char('r'))->map(function () { return "\r"; }),
+            (new ParserCombinator\Parser\Char('n'))->map(function () { return "\n"; }),
+            (new ParserCombinator\Parser\Char('b'))->map(function () { return "\x08"; }),
+            (new ParserCombinator\Parser\Char('t'))->map(function () { return "\t"; }),
+            (new ParserCombinator\Parser\Char('f'))->map(function () { return "\x0C"; }),
+            (new ParserCombinator\Parser\Char('u'))->map(\Widmogrod\Functional\curryN(5, function ($_, ...$digits) {
+                return html_entity_decode("&#x".implode('', $digits).";", ENT_NOQUOTES, 'UTF-8');
+            }))->ap($hexDigit)->ap($hexDigit)->ap($hexDigit)->ap($hexDigit)
         ));
         $char = new ParserCombinator\Combinator\Choice(
             $simpleChar,
@@ -136,11 +147,11 @@ class JsonTest extends \PHPUnit\Framework\TestCase
                 ParserCombinator\Parser::of([])
             )
         )->apL(new ParserCombinator\Parser\Char(']'));
-        
+
         $pair = $string->map(\Widmogrod\Functional\curry(function ($a, $b) {
             return [$a => $b];
         }))->apL(new ParserCombinator\Parser\Char(':'))->ap($value);
-        
+
         $object = (new ParserCombinator\Parser\Char('{'))->apR(
             new ParserCombinator\Combinator\Choice(
                 $pair->map(\Widmogrod\Functional\curry(function ($a, $b) {
@@ -181,6 +192,9 @@ class JsonTest extends \PHPUnit\Framework\TestCase
             [1],
             [1,2],
             [1,2,3],
+            [true],
+            [false],
+            [null],
             [""],
             ["a"],
             ["\""],
@@ -191,6 +205,8 @@ class JsonTest extends \PHPUnit\Framework\TestCase
             [[]],
             ["a" => ["a"]],
             ["a" => ["a" => "a"]],
+            ["\0"],
+            ["a" => 0],
         ]);
     }
 }
