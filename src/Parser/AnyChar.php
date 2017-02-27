@@ -37,9 +37,8 @@ class AnyChar extends Parser
 
     public function run(Input $input) : Either\Either
     {
-        $input = $input->getString();
-        if (mb_strlen($input) < 1) return new Either\Left('End of input reached while trying to parse any char.');
+        if ($input->length() < 1) return new Either\Left('End of input reached while trying to parse any char.');
 
-        return new Either\Right(new Result(mb_substr($input, 0, 1), new Input(mb_substr($input, 1))));
+        return new Either\Right(new Result($input->chars(1), $input->advanceChars(1)));
     }
 }

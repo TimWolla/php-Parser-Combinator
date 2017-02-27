@@ -25,17 +25,68 @@ SOFTWARE.
 
 namespace Bastelstube\ParserCombinator;
 
-class Input
+final class Input
 {
     protected $string;
+    protected $offset = 0;
+    protected $bytes;
 
-    public function __construct(string $string)
+    public function __construct(string $string, $offset = 0)
     {
         $this->string = $string;
+        $this->offset = $offset;
+        
+        $this->bytes = strlen($this->string) - $this->offset;
     }
 
-    public function getString() : string
+    public function bytes(int $limit = 0) : string
     {
-        return $this->string;
+        if ($number < 0) {
+            throw new InvalidArgumentException('You must request at least 1 byte.');
+        }
+
+        if ($limit !== 0) {
+            return substr($this->string, $this->offset, $limit);
+        }
+
+        return substr($this->string, $this->offset);
+    }
+
+    public function chars(int $limit = 0) : string
+    {
+        if ($number < 0) {
+            throw new InvalidArgumentException('You must request at least 1 char.');
+        }
+
+        if ($limit !== 0) {
+            return mb_substr($this->string, $this->offset, $limit);
+        }
+
+        return mb_substr($this->string, $this->offset);
+    }
+
+    public function advanceBytes(int $number) : self
+    {
+        if ($number < 1) {
+            throw new InvalidArgumentException('You must advance at least 1 byte.');
+        }
+
+        return new self($this->string, $this->offset + $number);
+    }
+
+    public function advanceChars(int $number) : self
+    {
+        if ($number < 1) {
+            throw new InvalidArgumentException('You must advance at least 1 char.');
+        }
+
+        $bytes = strlen($this->chars(1));
+
+        return $this->advanceBytes($bytes);
+    }
+    
+    public function length() : int
+    {
+        return $this->bytes;
     }
 }

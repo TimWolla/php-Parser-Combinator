@@ -51,7 +51,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
             $this->fail($message);
         }, function ($result) {
             $this->assertSame('a', $result->getResult());
-            $this->assertSame('x', $result->getRest()->getString());
+            $this->assertSame('x', $result->getRest()->bytes());
         });
     }
 
@@ -70,7 +70,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
             $this->fail($message);
         }, function ($result) {
             $this->assertSame('a,b', $result->getResult());
-            $this->assertSame('x', $result->getRest()->getString());
+            $this->assertSame('x', $result->getRest()->bytes());
         });
     }
 
@@ -85,7 +85,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
             $this->fail($message);
         }, function ($result) {
             $this->assertSame('a', $result->getResult());
-            $this->assertSame('', $result->getRest()->getString());
+            $this->assertSame('', $result->getRest()->bytes());
         });
     }
 
@@ -100,7 +100,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
             $this->fail($message);
         }, function ($result) {
             $this->assertSame('b', $result->getResult());
-            $this->assertSame('', $result->getRest()->getString());
+            $this->assertSame('', $result->getRest()->bytes());
         });
     }
 
@@ -116,7 +116,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
             $this->fail($message);
         }, function ($result) {
             $this->assertSame('b', $result->getResult());
-            $this->assertSame('x', $result->getRest()->getString());
+            $this->assertSame('x', $result->getRest()->bytes());
         });
     }
 }

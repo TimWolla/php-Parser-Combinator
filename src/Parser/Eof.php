@@ -37,9 +37,8 @@ class Eof extends Parser
 
     public function run(Input $input) : Either\Either
     {
-        $input = $input->getString();
-        if (strlen($input) > 0) return new Either\Left('End of input not yet reached, while trying to match EOF.');
+        if ($input->length() > 0) return new Either\Left('End of input not yet reached, while trying to match EOF.');
 
-        return new Either\Right(new Result('', new Input('')));
+        return new Either\Right(new Result('', $input));
     }
 }

@@ -48,9 +48,4 @@ class Byte extends Parser
             return Parser::of($byte);
         })->run($input);
     }
-
-    public function __toString()
-    {
-        return 'Byte('.$this->byte.')';
-    }
 }

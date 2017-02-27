@@ -40,7 +40,7 @@ class ManyTest extends \PHPUnit_Framework_TestCase
             $this->fail($message);
         }, function ($result) {
             $this->assertSame('a', $result->getResult());
-            $this->assertSame('', $result->getRest()->getString());
+            $this->assertSame('', $result->getRest()->bytes());
         });
     }
 
@@ -54,7 +54,7 @@ class ManyTest extends \PHPUnit_Framework_TestCase
             $this->fail($message);
         }, function ($result) {
             $this->assertSame('aaa', $result->getResult());
-            $this->assertSame('', $result->getRest()->getString());
+            $this->assertSame('', $result->getRest()->bytes());
         });
     }
 
@@ -68,7 +68,7 @@ class ManyTest extends \PHPUnit_Framework_TestCase
             $this->fail($message);
         }, function ($result) {
             $this->assertSame('aaa', $result->getResult());
-            $this->assertSame('b', $result->getRest()->getString());
+            $this->assertSame('b', $result->getRest()->bytes());
         });
     }
 

@@ -37,9 +37,8 @@ class AnyByte extends Parser
 
     public function run(Input $input) : Either\Either
     {
-        $input = $input->getString();
-        if (strlen($input) < 1) return new Either\Left('End of input reached while trying to parse any byte.');
+        if ($input->length() < 1) return new Either\Left('End of input reached while trying to parse any byte.');
     
-        return new Either\Right(new Result($input{0}, new Input(substr($input, 1))));
+        return new Either\Right(new Result($input->bytes(1), $input->advanceBytes(1)));
     }
 }

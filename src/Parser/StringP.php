@@ -41,11 +41,10 @@ class StringP extends Parser
 
     public function run(Input $input) : Either\Either
     {
-        $input = $input->getString();
-        if (strlen($input) < ($length = strlen($this->string))) return new Either\Left('End of input reached while trying to parse string.');
-        if (substr($input, 0, $length) !== $this->string) return new Either\Left('Invalid string encountered.');
+        if ($input->length() < ($length = strlen($this->string))) return new Either\Left('End of input reached while trying to parse '.$this.'.');
+        if ($input->bytes($length) !== $this->string) return new Either\Left('Unable to match '.$this.', found '.$input->chars(3).'.');
 
-        return new Either\Right(new Result(substr($input, 0, $length), new Input(substr($input, $length))));
+        return new Either\Right(new Result($input->bytes($length), $input->advanceBytes($length)));
     }
 
     public function __toString()
