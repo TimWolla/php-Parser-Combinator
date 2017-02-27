@@ -41,7 +41,7 @@ final class Input
 
     public function bytes(int $limit = 0) : string
     {
-        if ($number < 0) {
+        if ($limit < 0) {
             throw new InvalidArgumentException('You must request at least 1 byte.');
         }
 
@@ -54,7 +54,7 @@ final class Input
 
     public function chars(int $limit = 0) : string
     {
-        if ($number < 0) {
+        if ($limit < 0) {
             throw new InvalidArgumentException('You must request at least 1 char.');
         }
 
@@ -80,7 +80,7 @@ final class Input
             throw new InvalidArgumentException('You must advance at least 1 char.');
         }
 
-        $bytes = strlen($this->chars(1));
+        $bytes = strlen($this->chars($number));
 
         return $this->advanceBytes($bytes);
     }
