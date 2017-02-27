@@ -1,0 +1,23 @@
+{
+    "name": "timwolla/parser-combinator",
+    "type": "library",
+    "require": {
+        "widmogrod/php-functional": "^3.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^4.7"
+    },
+    "scripts": {
+        "test": "phpunit"
+    },
+    "autoload": {
+        "psr-4": { "Bastelstube\\ParserCombinator\\": "src/" }
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Tim Düsterhus",
+            "email": "tim@bastelstu.be"
+        }
+    ]
+}
