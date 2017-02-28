@@ -70,26 +70,6 @@ abstract class Parser implements
     public function map(callable $function)
     {
         return Parser::of($function)->ap($this);
-
-        // Implementation without using ap.
-        return new class($this, $function) extends Parser {
-            private $parent;
-            private $function;
-
-            public function __construct(Parser $parent, callable $function)
-            {
-                $this->parent = $parent;
-                $this->function = $function;
-            }
-
-            public function run(Input $input) : Either\Either
-            {
-                $result = $this->parent->run($input);
-                return $result->map(function (Result $r) : Result {
-                    return $r->map($this->function);
-                });
-            }
-        };
     }
 
     /**
@@ -124,28 +104,6 @@ abstract class Parser implements
                 return Parser::of($f($x));
             });
         });
-
-        // Implementation without using bind.
-        return new class($this, $b) extends Parser {
-            private $a;
-            private $b;
-
-            public function __construct(Parser $a, Parser $b) {
-                $this->a = $a;
-                $this->b = $b;
-            }
-
-            public function run(Input $input) : Either\Either
-            {
-                return $this->a->run($input)
-                ->bind(function (Result $resultA) : Either\Either {
-                    return $this->b->run($resultA->getRest())
-                    ->bind(function (Result $resultB) use ($resultA) : Either\Either {
-                        return new Either\Right(new Result($resultA->getResult()($resultB->getResult()), $resultB->getRest()));
-                    });
-                });
-            }
-        };
     }
 
     /**
