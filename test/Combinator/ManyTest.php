@@ -26,13 +26,14 @@ SOFTWARE.
 namespace Bastelstube\ParserCombinator\Test\Combinator;
 
 use Bastelstube\ParserCombinator;
+use function Bastelstube\ParserCombinator\{char, choice, many, satisfyChar, stringP, tryP};
 
 class ManyTest extends \PHPUnit\Framework\TestCase
 {
     public function testSingle()
     {
         $a = new ParserCombinator\Parser\Byte('a');
-        $parser = (new ParserCombinator\Combinator\Many($a))->map(\Widmogrod\Functional\curry('implode', ['']));
+        $parser = (many($a))->map(\Widmogrod\Functional\curry('implode', ['']));
         $input = new ParserCombinator\Input('a');
 
         ParserCombinator\Parser::parse($parser, $input)->either(function ($message) {
@@ -46,7 +47,7 @@ class ManyTest extends \PHPUnit\Framework\TestCase
     public function testMultiple()
     {
         $a = new ParserCombinator\Parser\Byte('a');
-        $parser = (new ParserCombinator\Combinator\Many($a))->map(\Widmogrod\Functional\curry('implode', ['']));
+        $parser = (many($a))->map(\Widmogrod\Functional\curry('implode', ['']));
         $input = new ParserCombinator\Input('aaa');
 
         ParserCombinator\Parser::parse($parser, $input)->either(function ($message) {
@@ -60,7 +61,7 @@ class ManyTest extends \PHPUnit\Framework\TestCase
     public function testMultipleRest()
     {
         $a = new ParserCombinator\Parser\Byte('a');
-        $parser = (new ParserCombinator\Combinator\Many($a))->map(\Widmogrod\Functional\curry('implode', ['']));
+        $parser = (many($a))->map(\Widmogrod\Functional\curry('implode', ['']));
         $input = new ParserCombinator\Input('aaab');
 
         ParserCombinator\Parser::parse($parser, $input)->either(function ($message) {
@@ -74,7 +75,7 @@ class ManyTest extends \PHPUnit\Framework\TestCase
     public function testMinimum()
     {
         $a = new ParserCombinator\Parser\Byte('a');
-        $parser = (new ParserCombinator\Combinator\Many($a, 1))->map(\Widmogrod\Functional\curry('implode', ['']));
+        $parser = (many($a, 1))->map(\Widmogrod\Functional\curry('implode', ['']));
         $input = new ParserCombinator\Input('');
 
         ParserCombinator\Parser::parse($parser, $input)->either(function ($message) {

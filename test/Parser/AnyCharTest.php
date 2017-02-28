@@ -26,6 +26,7 @@ SOFTWARE.
 namespace Bastelstube\ParserCombinator\Test\Parser;
 
 use Bastelstube\ParserCombinator;
+use function Bastelstube\ParserCombinator\{char, choice, many, satisfyChar, stringP, tryP};
 
 class AnyCharTest extends \PHPUnit\Framework\TestCase
 {

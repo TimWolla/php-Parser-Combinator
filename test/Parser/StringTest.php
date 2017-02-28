@@ -26,12 +26,13 @@ SOFTWARE.
 namespace Bastelstube\ParserCombinator\Test\Parser;
 
 use Bastelstube\ParserCombinator;
+use function Bastelstube\ParserCombinator\{char, choice, many, satisfyChar, stringP, tryP};
 
 class StringPTest extends \PHPUnit\Framework\TestCase
 {
     public function testParsesString()
     {
-        $parser = new ParserCombinator\Parser\StringP('abc');
+        $parser = stringP('abc');
         $input = new ParserCombinator\Input('abc');
 
         ParserCombinator\Parser::parse($parser, $input)->either(function ($message) {
@@ -43,7 +44,7 @@ class StringPTest extends \PHPUnit\Framework\TestCase
 
     public function testDoesNotParseInvalidString()
     {
-        $parser = new ParserCombinator\Parser\StringP('abc');
+        $parser = stringP('abc');
 
         $input = new ParserCombinator\Input('ab');
 

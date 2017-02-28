@@ -11,7 +11,10 @@
         "test": "phpunit"
     },
     "autoload": {
-        "psr-4": { "Bastelstube\\ParserCombinator\\": "src/" }
+        "psr-4": { "Bastelstube\\ParserCombinator\\": "src/" },
+        "files": [
+            "src/functions.php"
+        ]
     },
     "autoload-dev": {
         "psr-4": { "Bastelstube\\ParserCombinator\\Test\\": "test/" }

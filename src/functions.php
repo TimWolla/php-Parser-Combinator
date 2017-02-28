@@ -23,34 +23,52 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-namespace Bastelstube\ParserCombinator\Test\Parser;
+namespace Bastelstube\ParserCombinator;
 
-use Bastelstube\ParserCombinator;
-use function Bastelstube\ParserCombinator\{char, choice, many, satisfyChar, stringP, tryP};
+const choice = 'Bastelstube\ParserCombinator\choice';
 
-class AnyByteTest extends \PHPUnit\Framework\TestCase
-{
-    public function testParsesByte()
-    {
-        $parser = new ParserCombinator\Parser\AnyByte();
-        $input = new ParserCombinator\Input('x');
+function choice(...$args) {
+	return new Combinator\Choice(...$args);
+}
 
-        ParserCombinator\Parser::parse($parser, $input)->either(function ($message) {
-            $this->fail((string) $message);
-        }, function ($result) {
-            $this->assertSame('x', $result->getResult());
-        });
-    }
+const many = 'Bastelstube\ParserCombinator\many';
 
-    public function testDoesNotParseEof()
-    {
-        $parser = new ParserCombinator\Parser\AnyByte();
-        $input = new ParserCombinator\Input('');
+function many(...$args) {
+	return new Combinator\Many(...$args);
+}
 
-        ParserCombinator\Parser::parse($parser, $input)->either(function ($message) {
-            $this->assertTrue(true);
-        }, function ($result) {
-            $this->fail($result->getResult());
-        });
-    }
+const tryP = 'Bastelstube\ParserCombinator\tryP';
+
+function tryP(...$args) {
+	return new TryP(...$args);
+}
+
+const stringP = 'Bastelstube\ParserCombinator\stringP';
+
+function stringP(...$args) {
+	return new Parser\StringP(...$args);
+}
+
+const byte = 'Bastelstube\ParserCombinator\byte';
+
+function byte(...$args) {
+	return new Parser\Byte(...$args);
+}
+
+const char = 'Bastelstube\ParserCombinator\char';
+
+function char(...$args) {
+	return new Parser\Char(...$args);
+}
+
+const satisfyByte = 'Bastelstube\ParserCombinator\satisfyByte';
+
+function satisfyByte(...$args) {
+	return new Parser\SatisfyByte(...$args);
+}
+
+const satisfyChar = 'Bastelstube\ParserCombinator\satisfyChar';
+
+function satisfyChar(...$args) {
+	return new Parser\SatisfyChar(...$args);
 }

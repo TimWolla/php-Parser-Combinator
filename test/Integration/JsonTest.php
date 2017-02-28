@@ -26,6 +26,7 @@ SOFTWARE.
 namespace Bastelstube\ParserCombinator\Test\Integration;
 
 use Bastelstube\ParserCombinator;
+use function Bastelstube\ParserCombinator\{char, choice, many, satisfyChar, stringP, tryP};
 
 class JsonTest extends \PHPUnit\Framework\TestCase
 {
@@ -33,143 +34,143 @@ class JsonTest extends \PHPUnit\Framework\TestCase
 
     public static function setUpBeforeClass()
     {
-        $null = (new ParserCombinator\Parser\StringP('null'))->map(function () {
+        $null = stringP('null')->map(function () {
             return null;
         });
 
-        $true = (new ParserCombinator\Parser\StringP('true'))->map(function () {
+        $true = stringP('true')->map(function () {
             return true;
         });
-        $false = (new ParserCombinator\Parser\StringP('false'))->map(function () {
+        $false = stringP('false')->map(function () {
             return false;
         });
-        $bool = new ParserCombinator\Combinator\Choice(
+        $bool = choice(
             $true,
             $false
         );
 
-        $digit1 = new ParserCombinator\Parser\SatisfyChar(function ($char) : bool {
+        $digit1 = satisfyChar(function ($char) : bool {
             return preg_match('/^[1-9]$/u', $char) > 0;
         });
-        $zero = new ParserCombinator\Parser\Char('0');
-        $digit = new ParserCombinator\Combinator\Choice(
-            new ParserCombinator\TryP($digit1),
+        $zero = char('0');
+        $digit = choice(
+            tryP($digit1),
             $zero
         );
-        $digits = (new ParserCombinator\Combinator\Many($digit, 1))->map(function ($results) {
+        $digits = (many($digit, 1))->map(function ($results) {
             return implode('', $results);
         });
-        $frac = (new ParserCombinator\Parser\Char('.'))->map(\Widmogrod\Functional\curry(function ($a, $b) {
+        $frac = (char('.'))->map(\Widmogrod\Functional\curry(function ($a, $b) {
             return $a.$b;
         }))->ap($digits);
-        $e = new ParserCombinator\Combinator\Choice(
-            new ParserCombinator\TryP(new ParserCombinator\Parser\StringP('e')),
-            new ParserCombinator\TryP(new ParserCombinator\Parser\StringP('e+')),
-            new ParserCombinator\TryP(new ParserCombinator\Parser\StringP('e-')),
-            new ParserCombinator\TryP(new ParserCombinator\Parser\StringP('E')),
-            new ParserCombinator\TryP(new ParserCombinator\Parser\StringP('E+')),
-            new ParserCombinator\Parser\StringP('E-')
+        $e = choice(
+            tryP(stringP('e')),
+            tryP(stringP('e+')),
+            tryP(stringP('e-')),
+            tryP(stringP('E')),
+            tryP(stringP('E+')),
+            stringP('E-')
         );
         $exp = $e->map(\Widmogrod\Functional\curry(function ($a, $b) {
             return $a.$b;
         }))->ap($digits);
-        $optMinus = new ParserCombinator\Combinator\Choice(
-            new ParserCombinator\TryP(new ParserCombinator\Parser\Char('-')),
+        $optMinus = choice(
+            tryP(char('-')),
             ParserCombinator\Parser::of('')
         );
-        $int = new ParserCombinator\Combinator\Choice(
-            new ParserCombinator\TryP($optMinus->map(\Widmogrod\Functional\curry(function ($a, $b, $c) {
+        $int = choice(
+            tryP($optMinus->map(\Widmogrod\Functional\curry(function ($a, $b, $c) {
                 return $a.$b.$c;
             }))->ap($digit1)->ap($digits)),
             $optMinus->map(\Widmogrod\Functional\curry(function ($a, $b) {
                 return $a.$b;
             }))->ap($digit)
         );
-        $number = new ParserCombinator\Combinator\Choice(
-            new ParserCombinator\TryP($int->map(\Widmogrod\Functional\curry(function ($a, $b, $c) {
+        $number = choice(
+            tryP($int->map(\Widmogrod\Functional\curry(function ($a, $b, $c) {
                 return floatval($a.$b.$c);
             }))->ap($frac)->ap($exp)),
-            new ParserCombinator\TryP($int->map(\Widmogrod\Functional\curry(function ($a, $b) {
+            tryP($int->map(\Widmogrod\Functional\curry(function ($a, $b) {
                 return floatval($a.$b);
             }))->ap($frac)),
-            new ParserCombinator\TryP($int->map(\Widmogrod\Functional\curry(function ($a, $b) {
+            tryP($int->map(\Widmogrod\Functional\curry(function ($a, $b) {
                 return floatval($a.$b);
             }))->ap($exp)),
             $int->map('intval')
         );
 
-        $simpleChar = new ParserCombinator\Parser\SatisfyChar(function ($char) {
+        $simpleChar = satisfyChar(function ($char) {
             return $char !== '"' && $char !== '\\';
         });
-        $hexDigit = new ParserCombinator\Parser\SatisfyChar(function ($char) {
+        $hexDigit = satisfyChar(function ($char) {
             return preg_match('/^[0-9a-f]$/ui', $char) > 0;
         });
-        $escaped = (new ParserCombinator\Parser\Char('\\'))->apR(new ParserCombinator\Combinator\Choice(
-            new ParserCombinator\TryP(new ParserCombinator\Parser\Char('"')),
-            new ParserCombinator\TryP(new ParserCombinator\Parser\Char('\\')),
-            new ParserCombinator\TryP(new ParserCombinator\Parser\Char('/')),
-            new ParserCombinator\TryP((new ParserCombinator\Parser\Char('r'))->map(function () { return "\r"; })),
-            new ParserCombinator\TryP((new ParserCombinator\Parser\Char('n'))->map(function () { return "\n"; })),
-            new ParserCombinator\TryP((new ParserCombinator\Parser\Char('b'))->map(function () { return "\x08"; })),
-            new ParserCombinator\TryP((new ParserCombinator\Parser\Char('t'))->map(function () { return "\t"; })),
-            new ParserCombinator\TryP((new ParserCombinator\Parser\Char('f'))->map(function () { return "\x0C"; })),
-            (new ParserCombinator\Parser\Char('u'))->map(\Widmogrod\Functional\curryN(5, function ($_, ...$digits) {
+        $escaped = char('\\')->apR(choice(
+            tryP(char('"')),
+            tryP(char('\\')),
+            tryP(char('/')),
+            tryP(char('r'))->map(function () { return "\r"; }),
+            tryP(char('n'))->map(function () { return "\n"; }),
+            tryP(char('b'))->map(function () { return "\x08"; }),
+            tryP(char('t'))->map(function () { return "\t"; }),
+            tryP(char('f'))->map(function () { return "\x0C"; }),
+            char('u')->map(\Widmogrod\Functional\curryN(5, function ($_, ...$digits) {
                 return html_entity_decode("&#x".implode('', $digits).";", ENT_NOQUOTES, 'UTF-8');
             }))->ap($hexDigit)->ap($hexDigit)->ap($hexDigit)->ap($hexDigit)
         ));
-        $char = new ParserCombinator\Combinator\Choice(
-            new ParserCombinator\TryP($simpleChar),
+        $char = choice(
+            tryP($simpleChar),
             $escaped
         );
-        $chars = (new ParserCombinator\Combinator\Many($char, 1))->map(function ($results) {
+        $chars = (many($char, 1))->map(function ($results) {
             return implode('', $results);
         });
 
-        $string = (new ParserCombinator\Parser\Char('"'))->apR(new ParserCombinator\Combinator\Choice(
-            new ParserCombinator\TryP($chars),
+        $string = char('"')->apR(choice(
+            tryP($chars),
             ParserCombinator\Parser::of('')
-        ))->apL(new ParserCombinator\Parser\Char('"'));
+        ))->apL(char('"'));
 
         $array = ParserCombinator\Parser\Failure::get();
         $object = ParserCombinator\Parser\Failure::get();
-        $value = new ParserCombinator\Combinator\Choice(
-            new ParserCombinator\TryP($string),
-            new ParserCombinator\TryP($number),
-            new ParserCombinator\TryP($bool),
-            new ParserCombinator\TryP($null),
+        $value = choice(
+            tryP($string),
+            tryP($number),
+            tryP($bool),
+            tryP($null),
             new ParserCombinator\RefParser($array),
             new ParserCombinator\RefParser($object)
         );
 
-        $array = (new ParserCombinator\TryP(new ParserCombinator\Parser\Char('[')))->apR(
-            new ParserCombinator\Combinator\Choice(
+        $array = tryP(char('['))->apR(
+            choice(
                 $value->map(function ($a) {
                     return function ($b) use ($a) {
                         return array_merge([$a], $b);
                     };
-                })->ap(new ParserCombinator\Combinator\Many(
-                    (new ParserCombinator\Parser\Char(','))->apR($value)
+                })->ap(many(
+                    char(',')->apR($value)
                 )),
                 ParserCombinator\Parser::of([])
             )
-        )->apL(new ParserCombinator\Parser\Char(']'));
+        )->apL(char(']'));
 
         $pair = $string->map(\Widmogrod\Functional\curry(function ($a, $b) {
             return [$a => $b];
-        }))->apL(new ParserCombinator\Parser\Char(':'))->ap($value);
+        }))->apL(char(':'))->ap($value);
 
-        $object = (new ParserCombinator\TryP(new ParserCombinator\Parser\Char('{')))->apR(
-            new ParserCombinator\Combinator\Choice(
+        $object = tryP(char('{'))->apR(
+            choice(
                 $pair->map(\Widmogrod\Functional\curry(function ($a, $b) {
                     return array_merge($a, ...$b);
-                }))->ap(new ParserCombinator\Combinator\Many(
-                    (new ParserCombinator\Parser\Char(','))->apR($pair)
+                }))->ap(many(
+                    char(',')->apR($pair)
                 )),
                 ParserCombinator\Parser::of([])
             )
-        )->apL(new ParserCombinator\Parser\Char('}'));
+        )->apL(char('}'));
 
-        self::$json = new ParserCombinator\Combinator\Choice(
+        self::$json = choice(
             $array,
             $object
         );

@@ -26,6 +26,7 @@ SOFTWARE.
 namespace Bastelstube\ParserCombinator\Test\Combinator;
 
 use Bastelstube\ParserCombinator;
+use function Bastelstube\ParserCombinator\{char, choice, many, satisfyChar, stringP, tryP};
 
 class ChoiceTest extends \PHPUnit\Framework\TestCase
 {
@@ -33,7 +34,7 @@ class ChoiceTest extends \PHPUnit\Framework\TestCase
     {
         $a = new ParserCombinator\Parser\Byte('a');
         $b = new ParserCombinator\Parser\Byte('b');
-        $parser = new ParserCombinator\Combinator\Choice(new ParserCombinator\TryP($a), $b);
+        $parser = choice(tryP($a), $b);
         $input = new ParserCombinator\Input('a');
 
         ParserCombinator\Parser::parse($parser, $input)->either(function ($message) {
@@ -48,7 +49,7 @@ class ChoiceTest extends \PHPUnit\Framework\TestCase
     {
         $a = new ParserCombinator\Parser\Byte('a');
         $b = new ParserCombinator\Parser\Byte('b');
-        $parser = new ParserCombinator\Combinator\Choice(new ParserCombinator\TryP($a), $b);
+        $parser = choice(tryP($a), $b);
         $input = new ParserCombinator\Input('b');
 
         ParserCombinator\Parser::parse($parser, $input)->either(function ($message) {
@@ -63,7 +64,7 @@ class ChoiceTest extends \PHPUnit\Framework\TestCase
     {
         $a = new ParserCombinator\Parser\Byte('a');
         $b = new ParserCombinator\Parser\Byte('b');
-        $parser = new ParserCombinator\Combinator\Choice(new ParserCombinator\TryP($a), $b);
+        $parser = choice(tryP($a), $b);
         $input = new ParserCombinator\Input('c');
 
         ParserCombinator\Parser::parse($parser, $input)->either(function ($message) {

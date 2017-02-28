@@ -26,12 +26,13 @@ SOFTWARE.
 namespace Bastelstube\ParserCombinator\Test\Parser;
 
 use Bastelstube\ParserCombinator;
+use function Bastelstube\ParserCombinator\{char, choice, many, satisfyChar, stringP, tryP};
 
 class SatisfyCharTest extends \PHPUnit\Framework\TestCase
 {
     public function testParsesByte()
     {
-        $parser = new ParserCombinator\Parser\SatisfyChar(function ($byte) : bool {
+        $parser = satisfyChar(function ($byte) : bool {
             return $byte === 'ä' || $byte === 'ö';
         });
 
@@ -54,7 +55,7 @@ class SatisfyCharTest extends \PHPUnit\Framework\TestCase
 
     public function testDoesNotParseInvalidByte()
     {
-        $parser = new ParserCombinator\Parser\SatisfyChar(function ($byte) : bool {
+        $parser = satisfyChar(function ($byte) : bool {
             return $byte === 'ä' || $byte === 'ö';
         });
 

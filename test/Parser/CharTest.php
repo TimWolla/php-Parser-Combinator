@@ -26,6 +26,7 @@ SOFTWARE.
 namespace Bastelstube\ParserCombinator\Test\Parser;
 
 use Bastelstube\ParserCombinator;
+use function Bastelstube\ParserCombinator\{char, choice, many, satisfyChar, stringP, tryP};
 
 class CharTest extends \PHPUnit\Framework\TestCase
 {
@@ -34,7 +35,7 @@ class CharTest extends \PHPUnit\Framework\TestCase
      */
     public function testRejectsEmpty()
     {
-        new ParserCombinator\Parser\Char('');
+        char('');
     }
 
     /**
@@ -42,12 +43,12 @@ class CharTest extends \PHPUnit\Framework\TestCase
      */
     public function testRejectsLong()
     {
-        new ParserCombinator\Parser\Char('ä.');
+        char('ä.');
     }
 
     public function testParsesChar()
     {
-        $parser = new ParserCombinator\Parser\Char('ä');
+        $parser = char('ä');
         $input = new ParserCombinator\Input('ä');
 
         ParserCombinator\Parser::parse($parser, $input)->either(function ($message) {
@@ -59,7 +60,7 @@ class CharTest extends \PHPUnit\Framework\TestCase
 
     public function testDoesNotParseInvalidChar()
     {
-        $parser = new ParserCombinator\Parser\Char('ä');
+        $parser = char('ä');
         $input = new ParserCombinator\Input('a');
 
         ParserCombinator\Parser::parse($parser, $input)->either(function ($message) {
