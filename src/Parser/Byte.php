@@ -26,6 +26,7 @@ SOFTWARE.
 namespace Bastelstube\ParserCombinator\Parser;
 
 use Bastelstube\ParserCombinator\Input;
+use Bastelstube\ParserCombinator\ParseResult;
 use Bastelstube\ParserCombinator\Parser;
 use Bastelstube\ParserCombinator\Result;
 use Widmogrod\Monad\Either;
@@ -49,7 +50,7 @@ class Byte extends Parser
     public function run(Input $input) : Either\Either
     {
         return AnyByte::get()->bind(function ($byte) {
-            if ($this->byte !== $byte) return Failure::get();
+            if ($this->byte !== $byte) return new Failure('Unexpected '.$byte.', expecting '.$this->byte.'.');
 
             return Parser::of($byte);
         })->run($input);

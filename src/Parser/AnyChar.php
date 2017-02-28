@@ -26,6 +26,7 @@ SOFTWARE.
 namespace Bastelstube\ParserCombinator\Parser;
 
 use Bastelstube\ParserCombinator\Input;
+use Bastelstube\ParserCombinator\ParseResult;
 use Bastelstube\ParserCombinator\Parser;
 use Bastelstube\ParserCombinator\Result;
 use Bastelstube\ParserCombinator\Singleton;
@@ -43,8 +44,8 @@ class AnyChar extends Parser
      */
     public function run(Input $input) : Either\Either
     {
-        if ($input->length() < 1) return new Either\Left('End of input reached while trying to parse any char.');
+        if ($input->length() < 1) return new Either\Left(new ParseResult('End of input reached while trying to parse a char.', false));
 
-        return new Either\Right(new Result($input->chars(1), $input->advanceChars(1)));
+        return new Either\Right(new ParseResult(new Result($input->chars(1), $input->advanceChars(1)), true));
     }
 }

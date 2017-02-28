@@ -34,8 +34,8 @@ class StringPTest extends \PHPUnit\Framework\TestCase
         $parser = new ParserCombinator\Parser\StringP('abc');
         $input = new ParserCombinator\Input('abc');
 
-        $parser($input)->either(function ($message) {
-            $this->fail($message);
+        ParserCombinator\Parser::parse($parser, $input)->either(function ($message) {
+            $this->fail((string) $message);
         }, function ($result) {
             $this->assertSame('abc', $result->getResult());
         });
@@ -47,7 +47,7 @@ class StringPTest extends \PHPUnit\Framework\TestCase
 
         $input = new ParserCombinator\Input('ab');
 
-        $parser($input)->either(function ($message) {
+        ParserCombinator\Parser::parse($parser, $input)->either(function ($message) {
             $this->assertTrue(true);
         }, function ($result) {
             $this->fail($result->getResult());
@@ -55,7 +55,7 @@ class StringPTest extends \PHPUnit\Framework\TestCase
 
         $input = new ParserCombinator\Input('abd');
 
-        $parser($input)->either(function ($message) {
+        ParserCombinator\Parser::parse($parser, $input)->either(function ($message) {
             $this->assertTrue(true);
         }, function ($result) {
             $this->fail($result->getResult());

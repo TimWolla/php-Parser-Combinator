@@ -33,11 +33,11 @@ class ChoiceTest extends \PHPUnit\Framework\TestCase
     {
         $a = new ParserCombinator\Parser\Byte('a');
         $b = new ParserCombinator\Parser\Byte('b');
-        $parser = new ParserCombinator\Combinator\Choice($a, $b);
+        $parser = new ParserCombinator\Combinator\Choice(new ParserCombinator\TryP($a), $b);
         $input = new ParserCombinator\Input('a');
 
-        $parser($input)->either(function ($message) {
-            $this->fail($message);
+        ParserCombinator\Parser::parse($parser, $input)->either(function ($message) {
+            $this->fail((string) $message);
         }, function ($result) {
             $this->assertSame('a', $result->getResult());
             $this->assertSame('', $result->getRest()->bytes());
@@ -48,11 +48,11 @@ class ChoiceTest extends \PHPUnit\Framework\TestCase
     {
         $a = new ParserCombinator\Parser\Byte('a');
         $b = new ParserCombinator\Parser\Byte('b');
-        $parser = new ParserCombinator\Combinator\Choice($a, $b);
+        $parser = new ParserCombinator\Combinator\Choice(new ParserCombinator\TryP($a), $b);
         $input = new ParserCombinator\Input('b');
 
-        $parser($input)->either(function ($message) {
-            $this->fail($message);
+        ParserCombinator\Parser::parse($parser, $input)->either(function ($message) {
+            $this->fail((string) $message);
         }, function ($result) {
             $this->assertSame('b', $result->getResult());
             $this->assertSame('', $result->getRest()->bytes());
@@ -63,10 +63,10 @@ class ChoiceTest extends \PHPUnit\Framework\TestCase
     {
         $a = new ParserCombinator\Parser\Byte('a');
         $b = new ParserCombinator\Parser\Byte('b');
-        $parser = new ParserCombinator\Combinator\Choice($a, $b);
+        $parser = new ParserCombinator\Combinator\Choice(new ParserCombinator\TryP($a), $b);
         $input = new ParserCombinator\Input('c');
 
-        $parser($input)->either(function ($message) {
+        ParserCombinator\Parser::parse($parser, $input)->either(function ($message) {
             $this->assertTrue(true);
         }, function ($result) {
             $this->fail($result->getResult());

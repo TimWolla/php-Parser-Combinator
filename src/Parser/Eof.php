@@ -26,6 +26,7 @@ SOFTWARE.
 namespace Bastelstube\ParserCombinator\Parser;
 
 use Bastelstube\ParserCombinator\Input;
+use Bastelstube\ParserCombinator\ParseResult;
 use Bastelstube\ParserCombinator\Parser;
 use Bastelstube\ParserCombinator\Result;
 use Bastelstube\ParserCombinator\Singleton;
@@ -43,8 +44,8 @@ class Eof extends Parser
      */
     public function run(Input $input) : Either\Either
     {
-        if ($input->length() > 0) return new Either\Left('End of input not yet reached, while trying to match EOF.');
+        if ($input->length() > 0) return new Either\Left(new ParseResult('End of input not yet reached, while trying to match EOF.', false));
 
-        return new Either\Right(new Result('', $input));
+        return new Either\Right(new ParseResult(new Result('', $input), false));
     }
 }

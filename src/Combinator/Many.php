@@ -26,6 +26,7 @@ SOFTWARE.
 namespace Bastelstube\ParserCombinator\Combinator;
 
 use Bastelstube\ParserCombinator\Input;
+use Bastelstube\ParserCombinator\ParseResult;
 use Bastelstube\ParserCombinator\Parser;
 use Bastelstube\ParserCombinator\Result;
 use Widmogrod\Monad\Either;
@@ -57,8 +58,9 @@ class Many extends Parser
             $continue = $result->either(function ($left) {
                 return false;
             }, function ($right) use (&$results, &$input) {
-                $results[] = $right->getResult();
-                $input = $right->getRest();
+                $result = $right->getResult();
+                $results[] = $result->getResult();
+                $input = $result->getRest();
                 
                 return true;
             });
@@ -66,9 +68,9 @@ class Many extends Parser
         while ($continue);
 
         if (count($results) >= $this->min) {
-            return new Either\Right(new Result($results, $input));
+            return new Either\Right(new ParseResult(new Result($results, $input), count($results) > 0));
         }
 
-        return new Either\Left('Unable to parse often enough.');
+        return new Either\Left(new ParseResult($result->extract()->getResult(), count($results) > 0 || $result->extract()->hasConsumed()));
     }
 }

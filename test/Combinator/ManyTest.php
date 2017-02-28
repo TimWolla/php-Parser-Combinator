@@ -35,8 +35,8 @@ class ManyTest extends \PHPUnit\Framework\TestCase
         $parser = (new ParserCombinator\Combinator\Many($a))->map(\Widmogrod\Functional\curry('implode', ['']));
         $input = new ParserCombinator\Input('a');
 
-        $parser($input)->either(function ($message) {
-            $this->fail($message);
+        ParserCombinator\Parser::parse($parser, $input)->either(function ($message) {
+            $this->fail((string) $message);
         }, function ($result) {
             $this->assertSame('a', $result->getResult());
             $this->assertSame('', $result->getRest()->bytes());
@@ -49,8 +49,8 @@ class ManyTest extends \PHPUnit\Framework\TestCase
         $parser = (new ParserCombinator\Combinator\Many($a))->map(\Widmogrod\Functional\curry('implode', ['']));
         $input = new ParserCombinator\Input('aaa');
 
-        $parser($input)->either(function ($message) {
-            $this->fail($message);
+        ParserCombinator\Parser::parse($parser, $input)->either(function ($message) {
+            $this->fail((string) $message);
         }, function ($result) {
             $this->assertSame('aaa', $result->getResult());
             $this->assertSame('', $result->getRest()->bytes());
@@ -63,8 +63,8 @@ class ManyTest extends \PHPUnit\Framework\TestCase
         $parser = (new ParserCombinator\Combinator\Many($a))->map(\Widmogrod\Functional\curry('implode', ['']));
         $input = new ParserCombinator\Input('aaab');
 
-        $parser($input)->either(function ($message) {
-            $this->fail($message);
+        ParserCombinator\Parser::parse($parser, $input)->either(function ($message) {
+            $this->fail((string) $message);
         }, function ($result) {
             $this->assertSame('aaa', $result->getResult());
             $this->assertSame('b', $result->getRest()->bytes());
@@ -77,7 +77,7 @@ class ManyTest extends \PHPUnit\Framework\TestCase
         $parser = (new ParserCombinator\Combinator\Many($a, 1))->map(\Widmogrod\Functional\curry('implode', ['']));
         $input = new ParserCombinator\Input('');
 
-        $parser($input)->either(function ($message) {
+        ParserCombinator\Parser::parse($parser, $input)->either(function ($message) {
             $this->assertTrue(true);
         }, function ($result) {
             $this->fail($result->getResult());

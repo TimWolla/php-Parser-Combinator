@@ -37,16 +37,16 @@ class SatisfyCharTest extends \PHPUnit\Framework\TestCase
 
         $input = new ParserCombinator\Input('ä');
 
-        $parser($input)->either(function ($message) {
-            $this->fail($message);
+        ParserCombinator\Parser::parse($parser, $input)->either(function ($message) {
+            $this->fail((string) $message);
         }, function ($result) {
             $this->assertSame('ä', $result->getResult());
         });
 
         $input = new ParserCombinator\Input('ö');
 
-        $parser($input)->either(function ($message) {
-            $this->fail($message);
+        ParserCombinator\Parser::parse($parser, $input)->either(function ($message) {
+            $this->fail((string) $message);
         }, function ($result) {
             $this->assertSame('ö', $result->getResult());
         });
@@ -60,7 +60,7 @@ class SatisfyCharTest extends \PHPUnit\Framework\TestCase
 
         $input = new ParserCombinator\Input('ü');
 
-        $parser($input)->either(function ($message) {
+        ParserCombinator\Parser::parse($parser, $input)->either(function ($message) {
             $this->assertTrue(true);
         }, function ($result) {
             $this->fail($result->getResult());

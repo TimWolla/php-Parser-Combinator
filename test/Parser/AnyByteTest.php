@@ -34,8 +34,8 @@ class AnyByteTest extends \PHPUnit\Framework\TestCase
         $parser = new ParserCombinator\Parser\AnyByte();
         $input = new ParserCombinator\Input('x');
 
-        $parser($input)->either(function ($message) {
-            $this->fail($message);
+        ParserCombinator\Parser::parse($parser, $input)->either(function ($message) {
+            $this->fail((string) $message);
         }, function ($result) {
             $this->assertSame('x', $result->getResult());
         });
@@ -46,7 +46,7 @@ class AnyByteTest extends \PHPUnit\Framework\TestCase
         $parser = new ParserCombinator\Parser\AnyByte();
         $input = new ParserCombinator\Input('');
 
-        $parser($input)->either(function ($message) {
+        ParserCombinator\Parser::parse($parser, $input)->either(function ($message) {
             $this->assertTrue(true);
         }, function ($result) {
             $this->fail($result->getResult());

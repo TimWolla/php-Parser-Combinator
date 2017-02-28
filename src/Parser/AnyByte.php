@@ -26,6 +26,7 @@ SOFTWARE.
 namespace Bastelstube\ParserCombinator\Parser;
 
 use Bastelstube\ParserCombinator\Input;
+use Bastelstube\ParserCombinator\ParseResult;
 use Bastelstube\ParserCombinator\Parser;
 use Bastelstube\ParserCombinator\Result;
 use Bastelstube\ParserCombinator\Singleton;
@@ -43,8 +44,8 @@ class AnyByte extends Parser
      */
     public function run(Input $input) : Either\Either
     {
-        if ($input->length() < 1) return new Either\Left('End of input reached while trying to parse any byte.');
-    
-        return new Either\Right(new Result($input->bytes(1), $input->advanceBytes(1)));
+        if ($input->length() < 1) return new Either\Left(new ParseResult('End of input reached while trying to parse a byte.', false));
+
+        return new Either\Right(new ParseResult(new Result($input->bytes(1), $input->advanceBytes(1)), true));
     }
 }

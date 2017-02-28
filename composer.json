@@ -13,6 +13,9 @@
     "autoload": {
         "psr-4": { "Bastelstube\\ParserCombinator\\": "src/" }
     },
+    "autoload-dev": {
+        "psr-4": { "Bastelstube\\ParserCombinator\\Test\\": "test/" }
+    },
     "license": "MIT",
     "authors": [
         {

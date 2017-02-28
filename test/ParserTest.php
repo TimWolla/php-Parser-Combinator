@@ -31,11 +31,11 @@ class ParserTest extends \PHPUnit\Framework\TestCase
 {
     public function testMap()
     {
-        $parser = ParserCombinator\Parser::of('a');
+        $parser = ParserCombinator\Parser::of('a')->map('strtoupper');
         $input = new ParserCombinator\Input('x');
 
-        $parser->map('strtoupper')($input)->either(function ($message) {
-            $this->fail($message);
+        ParserCombinator\Parser::parse($parser, $input)->either(function ($message) {
+            $this->fail((string) $message);
         }, function ($result) {
             $this->assertSame('A', $result->getResult());
         });
@@ -46,8 +46,8 @@ class ParserTest extends \PHPUnit\Framework\TestCase
         $parser = ParserCombinator\Parser::of('a');
         $input = new ParserCombinator\Input('x');
 
-        $parser($input)->either(function ($message) {
-            $this->fail($message);
+        ParserCombinator\Parser::parse($parser, $input)->either(function ($message) {
+            $this->fail((string) $message);
         }, function ($result) {
             $this->assertSame('a', $result->getResult());
             $this->assertSame('x', $result->getRest()->bytes());
@@ -65,8 +65,8 @@ class ParserTest extends \PHPUnit\Framework\TestCase
         }))->ap($b);
         $input = new ParserCombinator\Input('x');
 
-        $parser($input)->either(function ($message) {
-            $this->fail($message);
+        ParserCombinator\Parser::parse($parser, $input)->either(function ($message) {
+            $this->fail((string) $message);
         }, function ($result) {
             $this->assertSame('a,b', $result->getResult());
             $this->assertSame('x', $result->getRest()->bytes());
@@ -80,8 +80,8 @@ class ParserTest extends \PHPUnit\Framework\TestCase
         $parser = $a->apL($b);
         $input = new ParserCombinator\Input('ab');
 
-        $parser($input)->either(function ($message) {
-            $this->fail($message);
+        ParserCombinator\Parser::parse($parser, $input)->either(function ($message) {
+            $this->fail((string) $message);
         }, function ($result) {
             $this->assertSame('a', $result->getResult());
             $this->assertSame('', $result->getRest()->bytes());
@@ -95,8 +95,8 @@ class ParserTest extends \PHPUnit\Framework\TestCase
         $parser = $a->apR($b);
         $input = new ParserCombinator\Input('ab');
 
-        $parser($input)->either(function ($message) {
-            $this->fail($message);
+        ParserCombinator\Parser::parse($parser, $input)->either(function ($message) {
+            $this->fail((string) $message);
         }, function ($result) {
             $this->assertSame('b', $result->getResult());
             $this->assertSame('', $result->getRest()->bytes());
@@ -111,8 +111,8 @@ class ParserTest extends \PHPUnit\Framework\TestCase
         });
         $input = new ParserCombinator\Input('x');
 
-        $parser($input)->either(function ($message) {
-            $this->fail($message);
+        ParserCombinator\Parser::parse($parser, $input)->either(function ($message) {
+            $this->fail((string) $message);
         }, function ($result) {
             $this->assertSame('b', $result->getResult());
             $this->assertSame('x', $result->getRest()->bytes());

@@ -26,6 +26,7 @@ SOFTWARE.
 namespace Bastelstube\ParserCombinator\Combinator;
 
 use Bastelstube\ParserCombinator\Input;
+use Bastelstube\ParserCombinator\ParseResult;
 use Bastelstube\ParserCombinator\Parser;
 use Bastelstube\ParserCombinator\Result;
 use Widmogrod\Monad\Either;
@@ -54,9 +55,13 @@ class Choice extends Parser
             if ($result instanceof Either\Right) {
                 return $result;
             }
-            $fails[] = $result->extract();
+            if ($result->extract()->hasConsumed()) {
+                return $result;
+            }
+
+            $fails[] = $result->extract()->getResult();
         }
 
-        return new Either\Left('No choice matched: '.implode(', ', $fails));
+        return new Either\Left(new ParseResult('No choice matched: '.implode(', ', $fails), false));
     }
 }

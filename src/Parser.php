@@ -46,6 +46,13 @@ abstract class Parser implements
      * @return  Either\Either<Result>
      */
     abstract public function run(Input $input) : Either\Either;
+    
+    public static function parse(Parser $parser, Input $input) : Either\Either
+    {
+        return $parser->run($input)->map(function ($parseResult) {
+            return $parseResult->getResult();
+        });
+    }
 
     /**
      * Alias for Parser::run().
@@ -102,7 +109,7 @@ abstract class Parser implements
 
             public function run(Input $input) : Either\Either
             {
-                return new Either\Right(new Result($this->value, $input));
+                return new Either\Right(new ParseResult(new Result($this->value, $input), false));
             }
         };
     }
@@ -190,9 +197,16 @@ abstract class Parser implements
             public function run(Input $input) : Either\Either
             {
                 return $this->parent->run($input)
-                ->bind(function (Result $result) : Either\Either {
+                ->bind(function (ParseResult $result) : Either\Either {
+                    $consumed = $result->hasConsumed();
+                    $result = $result->getResult();
+
                     $function = $this->function;
-                    return $function($result->getResult())->run($result->getRest());
+                    $resultB = $function($result->getResult())->run($result->getRest());
+
+                    return \Widmogrod\Monad\Either\doubleMap(function (ParseResult $left) use ($consumed) {
+                        return new ParseResult($left->getResult(), $left->hasConsumed() || $consumed);
+                    }, \Widmogrod\Functional\identity, $resultB);
                 });
             }
 

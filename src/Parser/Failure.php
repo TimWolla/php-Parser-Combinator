@@ -26,6 +26,7 @@ SOFTWARE.
 namespace Bastelstube\ParserCombinator\Parser;
 
 use Bastelstube\ParserCombinator\Input;
+use Bastelstube\ParserCombinator\ParseResult;
 use Bastelstube\ParserCombinator\Parser;
 use Bastelstube\ParserCombinator\Result;
 use Bastelstube\ParserCombinator\Singleton;
@@ -34,15 +35,22 @@ use Widmogrod\Monad\Either;
 /**
  * Always fails and never consumes input.
  */
-class Failure extends Parser
+final class Failure extends Parser
 {
     use Singleton;
+
+    protected $message;
+
+    public function __construct($message = self::class)
+    {
+        $this->message = $message;
+    }
 
     /**
      * @inheritDoc
      */
     public function run(Input $input) : Either\Either
     {
-        return new Either\Left(static::class);
+        return new Either\Left(new ParseResult($this->message, false));
     }
 }

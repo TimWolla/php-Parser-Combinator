@@ -23,41 +23,31 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-namespace Bastelstube\ParserCombinator\Parser;
+namespace Bastelstube\ParserCombinator;
 
-use Bastelstube\ParserCombinator\Input;
-use Bastelstube\ParserCombinator\ParseResult;
-use Bastelstube\ParserCombinator\Parser;
-use Bastelstube\ParserCombinator\Result;
-use Widmogrod\Monad\Either;
-
-/**
- * Matches the given string.
- */
-class StringP extends Parser
+class ParseResult
 {
-    protected $string;
+    protected $result;
+    protected $consumed;
 
-    public function __construct(string $string)
+    public function __construct($result, $consumed)
     {
-        $this->string = $string;
+        $this->result = $result;
+        $this->consumed = $consumed;
     }
 
-    public function run(Input $input) : Either\Either
+    public function getResult()
     {
-        if ($input->length() < ($length = strlen($this->string))) return new Either\Left(new ParseResult('End of input reached while trying to parse '.$this.'.', false));
-        $got = $input->bytes($length);
-        for ($i = 0; $i < $length; $i++) {
-            if ($got{$i} !== $this->string{$i}) {
-                return new Either\Left(new ParseResult('Unexpected '.$got{$i}.', expecting '.$this->string{$i}.' of '.$this->string.'.', $i > 0));
-            }
-        }
-
-        return new Either\Right(new ParseResult(new Result($got, $input->advanceBytes($length)), $length > 0));
+        return $this->result;
     }
 
+    public function hasConsumed()
+    {
+        return $this->consumed;
+    }
+    
     public function __toString()
     {
-        return 'String('.$this->string.')';
+        return (string) $this->result;
     }
 }
