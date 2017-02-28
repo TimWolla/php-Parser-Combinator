@@ -27,6 +27,7 @@ namespace Bastelstube\ParserCombinator\Test\Integration;
 
 use Bastelstube\ParserCombinator;
 use function Bastelstube\ParserCombinator\{char, choice, many, satisfyChar, stringP, tryP};
+use function \Widmogrod\Functional\{curry, curryN};
 
 class JsonTest extends \PHPUnit\Framework\TestCase
 {
@@ -57,10 +58,10 @@ class JsonTest extends \PHPUnit\Framework\TestCase
             tryP($digit1),
             $zero
         );
-        $digits = (many($digit, 1))->map(function ($results) {
+        $digits = many($digit, 1)->map(function ($results) {
             return implode('', $results);
         });
-        $frac = (char('.'))->map(\Widmogrod\Functional\curry(function ($a, $b) {
+        $frac = char('.')->map(curry(function ($a, $b) {
             return $a.$b;
         }))->ap($digits);
         $e = choice(
@@ -71,7 +72,7 @@ class JsonTest extends \PHPUnit\Framework\TestCase
             tryP(stringP('E+')),
             stringP('E-')
         );
-        $exp = $e->map(\Widmogrod\Functional\curry(function ($a, $b) {
+        $exp = $e->map(curry(function ($a, $b) {
             return $a.$b;
         }))->ap($digits);
         $optMinus = choice(
@@ -79,21 +80,21 @@ class JsonTest extends \PHPUnit\Framework\TestCase
             ParserCombinator\Parser::of('')
         );
         $int = choice(
-            tryP($optMinus->map(\Widmogrod\Functional\curry(function ($a, $b, $c) {
+            tryP($optMinus->map(curry(function ($a, $b, $c) {
                 return $a.$b.$c;
             }))->ap($digit1)->ap($digits)),
-            $optMinus->map(\Widmogrod\Functional\curry(function ($a, $b) {
+            $optMinus->map(curry(function ($a, $b) {
                 return $a.$b;
             }))->ap($digit)
         );
         $number = choice(
-            tryP($int->map(\Widmogrod\Functional\curry(function ($a, $b, $c) {
+            tryP($int->map(curry(function ($a, $b, $c) {
                 return floatval($a.$b.$c);
             }))->ap($frac)->ap($exp)),
-            tryP($int->map(\Widmogrod\Functional\curry(function ($a, $b) {
+            tryP($int->map(curry(function ($a, $b) {
                 return floatval($a.$b);
             }))->ap($frac)),
-            tryP($int->map(\Widmogrod\Functional\curry(function ($a, $b) {
+            tryP($int->map(curry(function ($a, $b) {
                 return floatval($a.$b);
             }))->ap($exp)),
             $int->map('intval')
@@ -105,28 +106,28 @@ class JsonTest extends \PHPUnit\Framework\TestCase
         $hexDigit = satisfyChar(function ($char) {
             return preg_match('/^[0-9a-f]$/ui', $char) > 0;
         });
-        $escaped = char('\\')->apR(choice(
+        $escaped = tryP(char('\\'))->apR(choice(
             tryP(char('"')),
             tryP(char('\\')),
             tryP(char('/')),
-            tryP(char('r'))->map(function () { return "\r"; }),
-            tryP(char('n'))->map(function () { return "\n"; }),
+            tryP(char('r'))->map(function () { return "\r";   }),
+            tryP(char('n'))->map(function () { return "\n";   }),
             tryP(char('b'))->map(function () { return "\x08"; }),
-            tryP(char('t'))->map(function () { return "\t"; }),
+            tryP(char('t'))->map(function () { return "\t";   }),
             tryP(char('f'))->map(function () { return "\x0C"; }),
-            char('u')->map(\Widmogrod\Functional\curryN(5, function ($_, ...$digits) {
+            char('u')->map(curryN(5, function ($_, ...$digits) {
                 return html_entity_decode("&#x".implode('', $digits).";", ENT_NOQUOTES, 'UTF-8');
             }))->ap($hexDigit)->ap($hexDigit)->ap($hexDigit)->ap($hexDigit)
         ));
         $char = choice(
-            tryP($simpleChar),
-            $escaped
+            $escaped,
+            $simpleChar
         );
-        $chars = (many($char, 1))->map(function ($results) {
+        $chars = many($char, 1)->map(function ($results) {
             return implode('', $results);
         });
 
-        $string = char('"')->apR(choice(
+        $string = tryP(char('"'))->apR(choice(
             tryP($chars),
             ParserCombinator\Parser::of('')
         ))->apL(char('"'));
@@ -134,10 +135,10 @@ class JsonTest extends \PHPUnit\Framework\TestCase
         $array = ParserCombinator\Parser\Failure::get();
         $object = ParserCombinator\Parser\Failure::get();
         $value = choice(
-            tryP($string),
+            $string,
             tryP($number),
-            tryP($bool),
-            tryP($null),
+            $bool,
+            $null,
             new ParserCombinator\RefParser($array),
             new ParserCombinator\RefParser($object)
         );
@@ -155,13 +156,13 @@ class JsonTest extends \PHPUnit\Framework\TestCase
             )
         )->apL(char(']'));
 
-        $pair = $string->map(\Widmogrod\Functional\curry(function ($a, $b) {
+        $pair = $string->map(curry(function ($a, $b) {
             return [$a => $b];
         }))->apL(char(':'))->ap($value);
 
         $object = tryP(char('{'))->apR(
             choice(
-                $pair->map(\Widmogrod\Functional\curry(function ($a, $b) {
+                $pair->map(curry(function ($a, $b) {
                     return array_merge($a, ...$b);
                 }))->ap(many(
                     char(',')->apR($pair)
