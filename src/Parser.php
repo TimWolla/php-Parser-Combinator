@@ -164,7 +164,9 @@ abstract class Parser implements
 
                     return \Widmogrod\Monad\Either\doubleMap(function (ParseResult $left) use ($consumed) {
                         return new ParseResult($left->getResult(), $left->hasConsumed() || $consumed);
-                    }, \Widmogrod\Functional\identity, $resultB);
+                    }, function (ParseResult $right) use ($consumed) {
+                        return new ParseResult($right->getResult(), $right->hasConsumed() || $consumed);
+                    }, $resultB);
                 });
             }
 
